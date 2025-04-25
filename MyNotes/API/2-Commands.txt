@@ -1,0 +1,92 @@
+In a .NET project, the Commands and Queries folders typically represent the Command-Query Responsibility Segregation (CQRS) pattern. 
+This pattern is used to separate commands (which modify state) from queries (which retrieve data) to improve the scalability, 
+maintainability, and performance of an application. The main idea behind CQRS is to have a clear distinction between operations 
+that change the state of the application (commands) and those that only read data (queries).
+
+Overview of CQRS
+In the CQRS pattern:
+
+Commands are used for write operations (e.g., creating, updating, deleting data).
+
+Queries are used for read operations (e.g., retrieving data without changing the state of the system).
+
+By segregating these responsibilities, CQRS allows each type of operation to be optimized and handled independently. 
+This pattern is particularly useful in complex applications, 
+especially when scaling or optimizing the performance of either the read or write side of the application.
+
+
+// Command to create a new user
+public class CreateUserCommand
+{
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public DateTime DateOfBirth { get; set; }
+}
+
+// Command Handler for CreateUserCommand
+public class CreateUserCommandHandler
+{
+    private readonly IUserRepository _userRepository;
+
+    public CreateUserCommandHandler(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+    public async Task<ValidationResult> Handle(CreateUserCommand command)
+    {
+        // Perform business logic and validation
+        var user = new User(command.Name, command.Email, command.DateOfBirth);
+        
+        // Save the user to the database (state change)
+        await _userRepository.AddUserAsync(user);
+
+        return ValidationResult.Success; // Success acknowledgment
+    }
+}
+
+
+
+
+// Query to get a user by ID
+public class GetUserByIdQuery
+{
+    public int UserId { get; set; }
+}
+
+// Query Handler for GetUserByIdQuery
+public class GetUserByIdQueryHandler
+{
+    private readonly IUserRepository _userRepository;
+
+    public GetUserByIdQueryHandler(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+    public async Task<UserDTO> Handle(GetUserByIdQuery query)
+    {
+        var user = await _userRepository.GetUserByIdAsync(query.UserId);
+        
+        if (user == null)
+        {
+            return null; // No user found
+        }
+
+        // Return user data in a DTO format
+        return new UserDTO
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email
+        };
+    }
+}
+
+===========================
+
+
+While CQRS (Command-Query Responsibility Segregation) does affect data access patterns and can involve the service layer,
+ it’s not strictly a data access layer underneath the service layer. Rather, CQRS is a pattern that focuses on separating 
+the read and write operations into different models, and it primarily affects how you structure the logic for handling 
+commands (writes) and queries (reads).

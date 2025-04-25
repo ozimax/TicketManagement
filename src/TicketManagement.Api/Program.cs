@@ -21,6 +21,15 @@ builder.Services
     .AddIdentityServices(builder.Configuration)
     .AddControllers();
 
+
+/////////////////
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.HttpsPort = 7025;
+});
+/////////////////
+
+
 builder.Services.AddCors(options =>
     {
         options.AddPolicy("all", builder => builder.AllowAnyOrigin()

@@ -1,0 +1,20 @@
+Why is a "Contracts" Folder Important?
+Separation of Concerns: The Contracts folder helps organize the application by separating the definition of the 
+contract (interface or DTO) from the actual implementation.
+
+Decoupling: Interfaces and DTOs allow you to decouple layers of your application, 
+which is especially helpful in unit testing and swapping out implementations without affecting other parts of the system.
+
+Consistency: Using contracts helps ensure that different parts of your system 
+(or even different services in a microservices architecture) adhere to the same structure and communication rules,
+improving maintainability and reliability.
+
+Example Structure:
+A typical Contracts folder might look something like this:
+
+markdown
+Copy
+/Contracts
+    /Interfaces
+        IUserService.cs
+        IOrderRepository.cs

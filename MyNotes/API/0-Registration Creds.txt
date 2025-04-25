@@ -1,0 +1,21 @@
+{
+  "firstName": "ozan",
+  "lastName": "onder",
+  "email": "ozanonder06@gmail.com",
+  "userName": "ozimax06",
+  "password": "Swimmer06!"
+}
+
+
+====================================
+
+
+{
+  "userId": "e8524f52-c7ae-4608-a683-4dbfa42b7546"
+}
+
+
+=====================================
+
+On Swagger, generate a bearer token from Login endpoint.
+Then insert that token into Authoriza section on very top

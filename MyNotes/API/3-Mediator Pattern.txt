@@ -1,0 +1,156 @@
+The Mediator pattern is a design pattern that promotes loose coupling between components in a system by having them communicate through 
+a central mediator rather than directly with each other. 
+The MediatR library in C# is an implementation of this pattern that simplifies the communication between objects 
+by using a mediator to handle requests and responses.
+
+Key Concepts of Mediator Pattern:
+
+Mediator: A central object that handles communication between other objects (also known as participants or components). 
+Rather than objects communicating directly, they send messages (requests) to the mediator, 
+which then routes the request to the appropriate handler.
+
+Request: A message sent by a component to the mediator, requesting an action (e.g., a command or query).
+
+Handler: The object responsible for processing the request.
+
+Response: The result returned after processing the request.
+
+
+
+##########Example
+
+1)COMMAND 
+
+
+CreateUserCommand represents a request (command) to create a new user.
+IRequest<Guid> means the request will return a Guid (perhaps the ID of the newly created user).
+
+public class CreateUserCommand : IRequest<Guid>
+{
+    public string Name { get; set; }
+    public string Email { get; set; }
+}
+
+
+
+Takes CreateUserCommand Returns GUID
+
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Guid>
+{
+    // You might have some repository to persist the user data
+    private readonly IUserRepository _userRepository;
+
+    public CreateUserCommandHandler(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+    public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    {
+        // Simulate user creation logic
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Name = request.Name,
+            Email = request.Email
+        };
+
+        // Save the user to the repository
+        await _userRepository.AddAsync(user);
+
+        // Return the new user's ID
+        return user.Id;
+    }
+}
+
+
+2)QUERY (Read Operations)
+
+IRequest<UserDTO> indicates this is a query that returns a UserDTO object.
+
+
+public class GetUserByIdQuery : IRequest<UserDTO>
+{
+    public Guid UserId { get; set; }
+}
+
+
+
+public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDTO>
+{
+    private readonly IUserRepository _userRepository;
+
+    public GetUserByIdQueryHandler(IUserRepository userRepository)
+    {
+        _userRepository = userRepository;
+    }
+
+
+    public async Task<UserDTO> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetByIdAsync(request.UserId);
+        
+        if (user == null)
+        {
+            return null; // No user found
+        }
+
+        return new UserDTO
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email
+        };
+    }
+}
+
+
+
+##################Sending Requests
+
+
+public UserController(IMediator mediator)
+{
+   _mediator = mediator;
+}
+
+[HttpPost]
+public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand command)
+{
+    var userId = await _mediator.Send(command); // Sends the command to the handler
+    return Ok(userId); // Return the created user's ID
+}
+
+
++++++++++++++++++++++++++
+
+
+public UserController(IMediator mediator)
+{
+    _mediator = mediator;
+}
+
+
+[HttpGet("{id}")]
+public async Task<IActionResult> GetUser(Guid id)
+{
+    var query = new GetUserByIdQuery { UserId = id };
+    var user = await _mediator.Send(query); // Sends the query to the handler
+
+    if (user == null)
+    {
+       return NotFound();
+    }
+
+    return Ok(user); // Return the user data
+}
+
+
+
+
+
+
+
+
+
+ 

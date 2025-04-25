@@ -1,0 +1,31 @@
+The ticket models are:
+
+1) Ticket Type
+
+Has Name and default days
+
+
+2) Ticket Request
+
+The logged in clients request the ticket. And each request has a ticket type
+it has a start and end date, it can be resolved or cancelled.
+In other words you request a ticket type.
+
+3) Ticket Allocation
+
+Allocate ticket type for a particular client for a particular period.
+The ticket allocation has certain number of days.
+
+When a ticket request is canncelled, the time between the request's end date and start date
+can be added to total number of days for that particular allocation again.
+
+
+When a client requests a ticket, the number of days between the request's 
+start and end date can not be greater than the corresonding allocation's number of days.
+
+
+In other words, a client has allocations for a certain ticket type. The  withing that allocation,
+the client can request ticket.
+
+A client can have a ticket allocation for a particular ticket type per a particular year(period) for
+X number of days.

@@ -1,0 +1,48 @@
+In modern C#, especially in frameworks that use constructor injection (like ASP.NET Core), 
+it's common to pass dependencies directly to the constructor without manually assigning them to class fields 
+(i.e., you don't need the this. initialization explicitly). 
+
+The constructor parameters are automatically used as local variables in the methods (like Handle in your case), 
+and they're implicitly assigned to instance fields, which is handled by the framework.
+
+This behavior relies on implicit constructor injection — the dependencies are passed into the class constructor by the DI container, 
+and the container knows which instance to inject when creating the object.
+
+
+
+#########Example:
+
+
+
+namespace TicketManagement.Application.Features.TicketRequest.Queries.GetTicketRequestList;
+
+public class GetTicketRequestListQueryHandler(
+
+    ITicketRequestRepository ticketRequestRepository,
+    IMapper mapper,
+    IUserService userService)
+    : IRequestHandler<GetTicketRequestListQuery, List<TicketRequestListDto>>
+{
+    public async Task<List<TicketRequestListDto>> Handle(GetTicketRequestListQuery request,
+        CancellationToken cancellationToken)
+    {
+        List<Domain.TicketRequest> ticketRequests;
+        List<TicketRequestListDto> requests;
+
+        if (request.IsLoggedInUser)
+        {
+            var userId = userService.UserId;
+            ticketRequests = await ticketRequestRepository.GetTicketWithDetails(userId);
+            requests = mapper.Map<List<TicketRequestListDto>>(ticketRequests);
+	    //etc
+
+        }
+        else
+        {
+            ticketRequests = await ticketRequestRepository.GetTicketWithDetails();
+	    //etc
+        }
+
+        return requests;
+    }
+}

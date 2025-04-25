@@ -1,0 +1,15 @@
+On API project, appsettings.json use following connection string:
+
+ "ConnectionStrings": {
+   "EmployeeManagerDb": "Data Source=LFLON44203\\SQLEXPRESS;Initial Catalog=EmployeeManagerDb;Integrated Security=True;TrustServerCertificate=True"
+ }
+
+ Package Manager Console:
+
+ Update-Database -Context TicketManagementDatabaseContext
+
+
+
+
+
+
